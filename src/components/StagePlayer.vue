@@ -22,7 +22,13 @@ import {
   ChevronRight,
   Disc,
   CheckCircle2,
-  Headphones
+  Headphones,
+  ListMusic,
+  GripVertical,
+  ArrowUpToLine,
+  Trash2,
+  User,
+  Wifi
 } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -33,6 +39,10 @@ const props = defineProps({
   nextSong: {
     type: Object,
     default: null
+  },
+  queue: {
+    type: Array,
+    default: () => []
   },
   isPlaying: {
     type: Boolean,
@@ -97,8 +107,32 @@ const emit = defineEmits([
   'switch-to-remote-page',
   'song-ended',
   'time-update',
-  'open-add-tab'
+  'open-add-tab',
+  'play-immediately',
+  'move-to-top',
+  'remove-from-queue',
+  'reorder-queue'
 ])
+
+const fsDraggedIndex = ref(null)
+
+function onFsDragStart(event, index) {
+  fsDraggedIndex.value = index
+  event.dataTransfer.effectAllowed = 'move'
+  event.dataTransfer.setData('text/plain', String(index))
+}
+
+function onFsDrop(event, targetIndex) {
+  event.preventDefault()
+  const fromIndex =
+    fsDraggedIndex.value !== null
+      ? fsDraggedIndex.value
+      : Number(event.dataTransfer.getData('text/plain'))
+  fsDraggedIndex.value = null
+  if (!Number.isNaN(fromIndex) && fromIndex !== targetIndex) {
+    emit('reorder-queue', { fromIndex, toIndex: targetIndex })
+  }
+}
 
 const stageContainerRef = ref(null)
 const isFullscreen = ref(false)
@@ -568,7 +602,7 @@ onBeforeUnmount(() => {
       </transition>
 
       <!-- Up Next Floating Corner Preview (Bottom Left) -->
-      <div class="stage-upnext-Hud" v-if="currentSong && nextSong">
+      <div class="stage-upnext-Hud" v-if="currentSong && nextSong && !isFullscreen">
         <div class="hud-label">
           <span>UP NEXT IN QUEUE</span>
         </div>
@@ -578,14 +612,117 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <!-- Always-Visible Corner QR Code HUD on Stage (Bottom Right) -->
-      <div class="stage-qr-hud" v-if="qrDataUrl">
+      <!-- Always-Visible Corner QR Code HUD on Stage (Normal View) -->
+      <div class="stage-qr-hud" v-if="qrDataUrl && !isFullscreen">
         <img :src="qrDataUrl" alt="Scan Remote QR" class="stage-qr-img" />
         <div class="stage-qr-text">
           <span class="stage-qr-label">SCAN REMOTE</span>
           <strong class="stage-qr-room">{{ roomId }}</strong>
+          <span class="stage-qr-sub">สแกนเพิ่มคิวเพลง</span>
         </div>
       </div>
+
+      <!-- FULLSCREEN RIGHT PANEL: LARGE QR CODE + LIVE QUEUE LIST -->
+      <aside class="fs-right-queue-dock" v-if="isFullscreen">
+        <!-- Large QR Code Box at Top of Right Panel -->
+        <div class="fs-qr-card" v-if="qrDataUrl">
+          <div class="fs-qr-img-box">
+            <img :src="qrDataUrl" alt="Room QR Code" class="fs-qr-img" />
+          </div>
+          <div class="fs-qr-meta">
+            <div class="fs-qr-badge">
+              <QrCode :size="13" />
+              <span>MOBILE REMOTE</span>
+            </div>
+            <div class="fs-qr-room mono-code">{{ roomId }}</div>
+            <p class="fs-qr-hint">สแกนเพื่อค้นหาและเพิ่มคิวเพลง</p>
+            <div class="fs-qr-online">
+              <Wifi :size="12" />
+              <span>เชื่อมต่อแล้ว {{ remoteCount }} เครื่อง</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Queue List in Fullscreen Right Panel -->
+        <div class="fs-queue-section">
+          <div class="fs-queue-header">
+            <div class="fs-queue-title">
+              <ListMusic :size="15" class="icon-accent" />
+              <span>คิวเพลงถัดไป ({{ queue.length }})</span>
+            </div>
+            <span class="fs-drag-hint" v-if="queue.length > 1">ลากสลับคิวได้</span>
+          </div>
+
+          <!-- Currently Playing Mini Banner inside Fullscreen Queue -->
+          <div class="fs-now-playing" v-if="currentSong">
+            <span class="fs-np-tag">กำลังเล่น</span>
+            <div class="fs-np-title">{{ currentSong.title }}</div>
+            <div class="fs-np-sub">
+              {{ currentSong.artist }} • โดย {{ currentSong.requestedBy || 'Host' }}
+            </div>
+          </div>
+
+          <div class="fs-queue-list" v-if="queue.length > 0">
+            <div
+              v-for="(item, index) in queue"
+              :key="item.queueId || `${item.id}-${index}`"
+              class="fs-queue-item"
+              draggable="true"
+              @dragstart="onFsDragStart($event, index)"
+              @dragover.prevent
+              @drop="onFsDrop($event, index)"
+            >
+              <div class="fs-q-grip">
+                <GripVertical :size="14" />
+                <span class="fs-q-num">{{ String(index + 1).padStart(2, '0') }}</span>
+              </div>
+              <img
+                :src="item.thumbnail"
+                :alt="item.title"
+                class="fs-q-thumb"
+                @click="emit('play-immediately', index)"
+                title="คลิกเพื่อเล่นเพลงนี้ทันที"
+              />
+              <div class="fs-q-info">
+                <div class="fs-q-song" :title="item.title">{{ item.title }}</div>
+                <div class="fs-q-meta">
+                  <span>{{ item.artist }}</span>
+                  <span>•</span>
+                  <span class="fs-q-user">
+                    <User :size="10" />
+                    {{ item.requestedBy || 'Host' }}
+                  </span>
+                </div>
+              </div>
+              <div class="fs-q-actions">
+                <button
+                  v-if="index > 0"
+                  type="button"
+                  class="fs-q-btn"
+                  @click="emit('move-to-top', index)"
+                  title="ดันขึ้นคิวแรก"
+                >
+                  <ArrowUpToLine :size="13" />
+                </button>
+                <button
+                  type="button"
+                  class="fs-q-btn danger"
+                  @click="emit('remove-from-queue', index)"
+                  title="ลบออกจากคิว"
+                >
+                  <Trash2 :size="13" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="fs-queue-empty" v-else>
+            <ListMusic :size="24" />
+            <p>ยังไม่มีเพลงในคิวถัดไป</p>
+            <span>สแกน QR Code ด้านบนเพื่อส่งเพลงเข้าคิว</span>
+          </div>
+        </div>
+      </aside>
     </div>
 
     <!-- Bottom Studio Transport Deck -->

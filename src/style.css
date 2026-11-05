@@ -783,38 +783,38 @@ input {
 /* Always-Visible Stage Corner QR HUD */
 .stage-qr-hud {
   position: absolute;
-  bottom: 16px;
-  right: 16px;
+  bottom: 18px;
+  right: 18px;
   z-index: 15;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 12px 8px 8px;
-  border-radius: 12px;
-  background: rgba(14, 16, 23, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  gap: 12px;
+  padding: 10px 16px 10px 10px;
+  border-radius: 14px;
+  background: rgba(14, 16, 23, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
 }
 
 .stage-qr-img {
-  width: 58px;
-  height: 58px;
-  border-radius: 6px;
+  width: 96px;
+  height: 96px;
+  border-radius: 8px;
   background: #ffffff;
-  padding: 3px;
+  padding: 5px;
   display: block;
 }
 
 .stage-qr-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .stage-qr-label {
   font-family: var(--font-mono);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: var(--accent-cyan);
@@ -822,9 +822,295 @@ input {
 
 .stage-qr-room {
   font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.stage-qr-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* =========================================================
+   FULLSCREEN RIGHT PANEL: LARGE QR CODE + LIVE QUEUE LIST
+   ========================================================= */
+.fs-right-queue-dock {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  width: 340px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: rgba(12, 14, 21, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  backdrop-filter: blur(18px);
+  padding: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+  overflow: hidden;
+}
+
+.fs-qr-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(25, 29, 42, 0.9);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  flex-shrink: 0;
+}
+
+.fs-qr-img-box {
+  width: 128px;
+  height: 128px;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+.fs-qr-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.fs-qr-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.fs-qr-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+.fs-qr-room {
+  font-size: 18px;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.fs-qr-hint {
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.fs-qr-online {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent-emerald);
+  margin-top: 2px;
+}
+
+.fs-queue-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+
+.fs-queue-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px;
+}
+
+.fs-queue-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
   font-size: 13px;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.fs-drag-hint {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.fs-now-playing {
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(6, 182, 212, 0.12));
+  border: 1px solid rgba(99, 102, 241, 0.4);
+  flex-shrink: 0;
+}
+
+.fs-np-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+}
+
+.fs-np-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.fs-np-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
+.fs-queue-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-right: 2px;
+}
+
+.fs-queue-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 9px;
+  background: rgba(25, 29, 42, 0.78);
+  border: 1px solid var(--border-subtle);
+  cursor: grab;
+}
+
+.fs-queue-item:hover {
+  background: rgba(33, 38, 54, 0.92);
+  border-color: var(--border-strong);
+}
+
+.fs-q-grip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.fs-q-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.fs-q-thumb {
+  width: 38px;
+  height: 38px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.fs-q-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.fs-q-song {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fs-q-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fs-q-user {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: #a5b4fc;
+}
+
+.fs-q-actions {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.fs-q-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 5px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.fs-q-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.fs-q-btn.danger:hover {
+  color: var(--accent-danger);
+}
+
+.fs-queue-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  padding: 20px;
+}
+
+.fs-queue-empty span {
+  font-size: 11px;
+  color: var(--text-secondary);
 }
 
 /* =========================================================

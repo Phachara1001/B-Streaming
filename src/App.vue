@@ -59,7 +59,7 @@ async function generateRoomQrCode() {
 
   try {
     qrDataUrl.value = await QRCode.toDataURL(url, {
-      width: 200,
+      width: 320,
       margin: 1,
       color: {
         dark: '#08090D',
@@ -483,6 +483,7 @@ watch(viewMode, (newMode) => {
     <StagePlayer
       :current-song="currentSong"
       :next-song="nextSong"
+      :queue="queue"
       :is-playing="isPlaying"
       :volume="volume"
       :is-muted="isMuted"
@@ -507,6 +508,10 @@ watch(viewMode, (newMode) => {
       @switch-to-remote-page="viewMode = 'remote'"
       @song-ended="handleSongEnded"
       @open-add-tab="sidebarTab = 'add'"
+      @play-immediately="playImmediately"
+      @move-to-top="moveToTop($event, 'Host')"
+      @remove-from-queue="removeFromQueue($event, 'Host')"
+      @reorder-queue="reorderQueue($event, 'Host')"
     />
 
     <!-- 1 PART (20% Width): QUEUE RUNNER, ADD SONG, DRAG-AND-DROP & PERMANENT QR CODE -->
