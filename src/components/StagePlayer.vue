@@ -1,5 +1,7 @@
 <script setup>
 import { ref, watch, onMounted, onBeforeUnmount, computed } from 'vue'
+import BrandLogo from './BrandLogo.vue'
+import ThemeSwitcher from './ThemeSwitcher.vue'
 import {
   Play,
   Pause,
@@ -111,10 +113,22 @@ const emit = defineEmits([
   'play-immediately',
   'move-to-top',
   'remove-from-queue',
-  'reorder-queue'
+  'reorder-queue',
+  'trigger-effect'
 ])
 
 const fsDraggedIndex = ref(null)
+
+// Art-directed scattered positions for Cartoon Clapping Hands (U-shaped cheering arc around stage edges)
+const CARTOON_CLAPPERS = [
+  { id: 1, left: '4%', bottom: '6%', size: '112px', tilt: '-14deg', delay: '0s', speed: '0.26s' },
+  { id: 2, left: '13%', bottom: '26%', size: '86px', tilt: '-8deg', delay: '0.09s', speed: '0.24s' },
+  { id: 3, left: '24%', bottom: '5%', size: '98px', tilt: '-5deg', delay: '0.16s', speed: '0.28s' },
+  { id: 4, left: '45%', bottom: '2%', size: '106px', tilt: '0deg', delay: '0.04s', speed: '0.25s' },
+  { id: 5, left: '66%', bottom: '5%', size: '98px', tilt: '5deg', delay: '0.13s', speed: '0.27s' },
+  { id: 6, left: '78%', bottom: '26%', size: '86px', tilt: '8deg', delay: '0.21s', speed: '0.24s' },
+  { id: 7, left: '87%', bottom: '6%', size: '112px', tilt: '14deg', delay: '0.07s', speed: '0.26s' }
+]
 
 function onFsDragStart(event, index) {
   fsDraggedIndex.value = index
@@ -416,14 +430,14 @@ onBeforeUnmount(() => {
     <header class="stage-topbar">
       <div class="brand-cluster">
         <div class="brand-logo-mark">
-          <Radio :size="18" class="icon-accent" />
+          <BrandLogo :size="52" />
         </div>
         <div class="brand-titles">
           <div class="brand-name-row">
-            <span class="brand-title">AURA KTV</span>
-            <span class="brand-pro-badge">STUDIO 4:1</span>
+            <span class="brand-title"><span class="brand-b">B</span><span class="brand-dash">-</span>Streaming</span>
+            <span class="brand-pro-badge">LIVE</span>
           </div>
-          <span class="brand-subtitle">Professional YouTube Karaoke System</span>
+          <span class="brand-subtitle">Stream. Sing. Share.</span>
         </div>
       </div>
 
@@ -477,6 +491,8 @@ onBeforeUnmount(() => {
             <span>Lyrics</span>
           </button>
         </div>
+
+        <ThemeSwitcher />
 
         <button type="button" class="remote-sim-btn" @click="emit('toggle-remote-drawer')"
           title="เปิดรีโมตมือถือจำลองบนหน้าจอ">
@@ -586,43 +602,273 @@ onBeforeUnmount(() => {
         </div>
       </transition>
 
-      <!-- Studio Visual Trigger Overlay -->
+      <!-- FULL-SCREEN EXTRAVAGANT CONCERT STAGE FX ARENA -->
       <transition name="effect-burst">
-        <div class="stage-effect-banner" v-if="activeEffect" :key="activeEffect.id">
-          <div class="effect-icon-circle">
-            <Award v-if="activeEffect.effectType === 'applause'" :size="28" />
-            <Sparkles v-else-if="activeEffect.effectType === 'spotlight'" :size="28" />
-            <Flame v-else :size="28" />
-          </div>
-          <div class="effect-copy">
-            <span class="effect-title">{{ activeEffect.label }}</span>
-            <span class="effect-sub">ส่งจาก {{ activeEffect.sender }}</span>
+        <div
+          v-if="activeEffect"
+          :key="activeEffect.id"
+          class="stage-fx-arena"
+          :class="`fx-mode-${activeEffect.effectType}`"
+        >
+          <!-- 1. APPLAUSE FX: CARTOON CLAPPING HANDS CROWD, COMIC IMPACT BURSTS & 3D CONFETTI -->
+          <template v-if="activeEffect.effectType === 'applause'">
+            <div class="fx-applause-aura"></div>
+            <div class="fx-shockwave-ring ring-1"></div>
+            <div class="fx-shockwave-ring ring-2"></div>
+            <div class="fx-shockwave-ring ring-3"></div>
+
+            <div class="fx-confetti-layer">
+              <span
+                v-for="n in 32"
+                :key="`conf-${n}`"
+                class="fx-confetti-piece"
+                :style="{
+                  left: `${(n * 3.1) - 1}%`,
+                  animationDelay: `${(n % 8) * 0.14}s`,
+                  '--drift': `${((n % 5) - 2) * 45}px`
+                }"
+              ></span>
+            </div>
+
+            <!-- ART-DIRECTED SCATTERED CARTOON CLAPPING HANDS AROUND STAGE EDGES -->
+            <div class="fx-cartoon-clappers-layer">
+              <div
+                v-for="item in CARTOON_CLAPPERS"
+                :key="`clapper-${item.id}`"
+                class="fx-cartoon-clapper"
+                :style="{
+                  left: item.left,
+                  bottom: item.bottom,
+                  width: item.size,
+                  height: item.size,
+                  '--tilt': item.tilt,
+                  '--clap-delay': item.delay,
+                  '--clap-speed': item.speed
+                }"
+              >
+                <svg
+                  viewBox="0 0 220 200"
+                  class="cartoon-clap-svg"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <defs>
+                    <linearGradient :id="`handLeftGrad-${item.id}`" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#FFE082" />
+                      <stop offset="100%" stop-color="#FFA000" />
+                    </linearGradient>
+                    <linearGradient :id="`handRightGrad-${item.id}`" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#FFF59D" />
+                      <stop offset="100%" stop-color="#FFC107" />
+                    </linearGradient>
+                  </defs>
+
+                  <!-- Comic Clap Impact Starburst & Sound Waves (Flashes at top-center when hands hit!) -->
+                  <g class="clap-impact-burst">
+                    <path
+                      d="M 65,28 Q 110,4 155,28"
+                      fill="none"
+                      stroke="#22D3EE"
+                      stroke-width="4.5"
+                      stroke-linecap="round"
+                    />
+                    <path
+                      d="M 50,16 Q 110,-12 170,16"
+                      fill="none"
+                      stroke="#F472B6"
+                      stroke-width="3.5"
+                      stroke-linecap="round"
+                    />
+                    <polygon
+                      points="110,18 122,44 150,28 134,56 164,64 136,80 150,104 122,94 110,120 98,94 70,104 84,80 56,64 86,56 70,28 98,44"
+                      fill="#FFF176"
+                      stroke="#F59E0B"
+                      stroke-width="4"
+                      stroke-linejoin="round"
+                    />
+                  </g>
+
+                  <!-- LEFT CARTOON HAND (Angled on the left side, swings in to clap) -->
+                  <g class="cartoon-hand-left">
+                    <g transform="translate(-16, 8) rotate(-18 80 130)">
+                      <rect
+                        x="34"
+                        y="142"
+                        width="44"
+                        height="22"
+                        rx="8"
+                        fill="#6366F1"
+                        stroke="#1E1B4B"
+                        stroke-width="5"
+                      />
+                      <path
+                        d="M42,144 C30,124 28,98 32,76 C34,64 44,62 47,74 L50,92
+                           C49,68 52,48 60,46 C68,44 72,60 70,84
+                           C72,60 78,44 86,46 C94,48 94,66 89,88
+                           C92,68 99,54 106,58 C112,62 109,82 101,102
+                           L110,90 C118,80 128,86 122,100 C114,120 98,136 80,146 Z"
+                        :fill="`url(#handLeftGrad-${item.id})`"
+                        stroke="#1E1B4B"
+                        stroke-width="5"
+                        stroke-linejoin="round"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M58,110 Q76,104 88,118"
+                        fill="none"
+                        stroke="#B45309"
+                        stroke-width="3.5"
+                        stroke-linecap="round"
+                      />
+                    </g>
+                  </g>
+
+                  <!-- RIGHT CARTOON HAND (Angled on the right side, swings in to clap) -->
+                  <g class="cartoon-hand-right">
+                    <g transform="translate(16, 8) rotate(18 140 130)">
+                      <rect
+                        x="142"
+                        y="142"
+                        width="44"
+                        height="22"
+                        rx="8"
+                        fill="#06B6D4"
+                        stroke="#1E1B4B"
+                        stroke-width="5"
+                      />
+                      <path
+                        d="M178,144 C190,124 192,98 188,76 C186,64 176,62 173,74 L170,92
+                           C171,68 168,48 160,46 C152,44 148,60 150,84
+                           C148,60 142,44 134,46 C126,48 126,66 131,88
+                           C128,68 121,54 114,58 C108,62 111,82 119,102
+                           L110,90 C102,80 92,86 98,100 C106,120 122,136 140,146 Z"
+                        :fill="`url(#handRightGrad-${item.id})`"
+                        stroke="#1E1B4B"
+                        stroke-width="5"
+                        stroke-linejoin="round"
+                        stroke-linecap="round"
+                      />
+                      <path
+                        d="M162,110 Q144,104 132,118"
+                        fill="none"
+                        stroke="#B45309"
+                        stroke-width="3.5"
+                        stroke-linecap="round"
+                      />
+                    </g>
+                  </g>
+                </svg>
+                <span class="comic-clap-tag">CLAP!</span>
+              </div>
+            </div>
+          </template>
+
+          <!-- 2. SPOTLIGHT FX: 6 VOLUMETRIC SWEEPING CONCERT BEAMS, 8 LASERS & FLOOR HALO -->
+          <template v-else-if="activeEffect.effectType === 'spotlight'">
+            <div class="fx-spotlight-rig">
+              <div class="fx-spotlight-beam beam-1"></div>
+              <div class="fx-spotlight-beam beam-2"></div>
+              <div class="fx-spotlight-beam beam-3"></div>
+              <div class="fx-spotlight-beam beam-4"></div>
+              <div class="fx-spotlight-beam beam-5"></div>
+              <div class="fx-spotlight-beam beam-6"></div>
+            </div>
+
+            <div class="fx-laser-grid">
+              <span
+                v-for="n in 8"
+                :key="`laser-${n}`"
+                class="fx-laser-beam"
+                :style="{
+                  left: `${n * 11}%`,
+                  animationDelay: `${n * 0.12}s`
+                }"
+              ></span>
+            </div>
+
+            <div class="fx-stage-floor-halo"></div>
+
+            <div class="fx-starburst-field">
+              <div
+                v-for="n in 12"
+                :key="`star-${n}`"
+                class="fx-starburst-node"
+                :style="{
+                  top: `${14 + ((n * 19) % 66)}%`,
+                  left: `${8 + ((n * 23) % 84)}%`,
+                  animationDelay: `${n * 0.11}s`
+                }"
+              >
+                <Sparkles :size="28" />
+              </div>
+            </div>
+          </template>
+
+          <!-- 3. HYPE / FIRE FX: ROARING PYRO FLAME PILLARS, FIRE WALL, 40 RISING EMBERS & HEAT PULSE -->
+          <template v-else>
+            <div class="fx-inferno-vignette"></div>
+
+            <div class="fx-fire-wall-bottom">
+              <div class="fx-fire-glow-base"></div>
+              <div
+                v-for="n in 10"
+                :key="`pyro-${n}`"
+                class="fx-pyro-pillar"
+                :style="{
+                  height: `${52 + ((n % 3) * 14)}%`,
+                  animationDelay: `${(n % 4) * 0.08}s`
+                }"
+              >
+                <div class="pyro-core"></div>
+                <div class="pyro-outer"></div>
+              </div>
+            </div>
+
+            <div class="fx-ember-storm">
+              <span
+                v-for="n in 36"
+                :key="`ember-${n}`"
+                class="fx-ember-spark"
+                :style="{
+                  left: `${(n * 2.7) - 1}%`,
+                  width: `${6 + (n % 4) * 2}px`,
+                  height: `${6 + (n % 4) * 2}px`,
+                  animationDelay: `${(n % 9) * 0.14}s`,
+                  '--ember-drift': `${((n % 5) - 2) * 40}px`
+                }"
+              ></span>
+            </div>
+
+            <div class="fx-floating-flames">
+              <div
+                v-for="n in 8"
+                :key="`flame-icon-${n}`"
+                class="fx-flame-surge"
+                :style="{
+                  left: `${(n * 11.5) - 2}%`,
+                  animationDelay: `${n * 0.16}s`
+                }"
+              >
+                <Flame :size="38" />
+              </div>
+            </div>
+          </template>
+
+          <!-- CENTER-TOP DRAMATIC NEON BANNER -->
+          <div class="stage-effect-banner" :class="`banner-${activeEffect.effectType}`">
+            <div class="effect-icon-circle">
+              <Award v-if="activeEffect.effectType === 'applause'" :size="30" />
+              <Sparkles v-else-if="activeEffect.effectType === 'spotlight'" :size="30" />
+              <Flame v-else :size="30" />
+            </div>
+            <div class="effect-copy">
+              <span class="effect-title">{{ activeEffect.label }}</span>
+              <span class="effect-sub">TRIGGERED BY {{ activeEffect.sender }}</span>
+            </div>
           </div>
         </div>
       </transition>
 
-      <!-- Up Next Floating Corner Preview (Bottom Left) -->
-      <div class="stage-upnext-Hud" v-if="currentSong && nextSong && !isFullscreen">
-        <div class="hud-label">
-          <span>UP NEXT IN QUEUE</span>
-        </div>
-        <div class="hud-song">
-          <span class="hud-title">{{ nextSong.title }}</span>
-          <span class="hud-artist">{{ nextSong.artist }}</span>
-        </div>
-      </div>
-
-      <!-- Always-Visible Corner QR Code HUD on Stage (Normal View) -->
-      <div class="stage-qr-hud" v-if="qrDataUrl && !isFullscreen">
-        <img :src="qrDataUrl" alt="Scan Remote QR" class="stage-qr-img" />
-        <div class="stage-qr-text">
-          <span class="stage-qr-label">SCAN REMOTE</span>
-          <strong class="stage-qr-room">{{ roomId }}</strong>
-          <span class="stage-qr-sub">สแกนเพิ่มคิวเพลง</span>
-        </div>
-      </div>
-
-      <!-- FULLSCREEN RIGHT PANEL: LARGE QR CODE + LIVE QUEUE LIST -->
+      <!-- FULLSCREEN RIGHT PANEL (SIDE-BY-SIDE COLUMN, DOES NOT COVER VIDEO) -->
       <aside class="fs-right-queue-dock" v-if="isFullscreen">
         <!-- Large QR Code Box at Top of Right Panel -->
         <div class="fs-qr-card" v-if="qrDataUrl">
@@ -647,18 +893,26 @@ onBeforeUnmount(() => {
         <div class="fs-queue-section">
           <div class="fs-queue-header">
             <div class="fs-queue-title">
-              <ListMusic :size="15" class="icon-accent" />
-              <span>คิวเพลงถัดไป ({{ queue.length }})</span>
+              <ListMusic :size="16" class="icon-accent" />
+              <span>UP NEXT</span>
+              <span class="fs-count-chip">{{ queue.length }}</span>
             </div>
             <span class="fs-drag-hint" v-if="queue.length > 1">ลากสลับคิวได้</span>
           </div>
 
-          <!-- Currently Playing Mini Banner inside Fullscreen Queue -->
+          <!-- Currently Playing Card inside Fullscreen Queue -->
           <div class="fs-now-playing" v-if="currentSong">
-            <span class="fs-np-tag">กำลังเล่น</span>
-            <div class="fs-np-title">{{ currentSong.title }}</div>
-            <div class="fs-np-sub">
-              {{ currentSong.artist }} • โดย {{ currentSong.requestedBy || 'Host' }}
+            <div class="fs-np-art" :style="{ backgroundImage: `url(${currentSong.thumbnail})` }"></div>
+            <div class="fs-np-body">
+              <span class="fs-np-tag">
+                <span class="fs-np-eq"><i></i><i></i><i></i><i></i></span>
+                NOW PLAYING
+              </span>
+              <div class="fs-np-title">{{ currentSong.title }}</div>
+              <div class="fs-np-sub">
+                {{ currentSong.artist }}
+                <span class="fs-np-by">โดย {{ currentSong.requestedBy || 'Host' }}</span>
+              </div>
             </div>
           </div>
 
@@ -667,6 +921,7 @@ onBeforeUnmount(() => {
               v-for="(item, index) in queue"
               :key="item.queueId || `${item.id}-${index}`"
               class="fs-queue-item"
+              :class="{ 'is-next': index === 0 }"
               draggable="true"
               @dragstart="onFsDragStart($event, index)"
               @dragover.prevent
@@ -674,20 +929,16 @@ onBeforeUnmount(() => {
             >
               <div class="fs-q-grip">
                 <GripVertical :size="14" />
-                <span class="fs-q-num">{{ String(index + 1).padStart(2, '0') }}</span>
+                <span class="fs-q-num">{{ index + 1 }}</span>
               </div>
-              <img
-                :src="item.thumbnail"
-                :alt="item.title"
-                class="fs-q-thumb"
-                @click="emit('play-immediately', index)"
-                title="คลิกเพื่อเล่นเพลงนี้ทันที"
-              />
+              <div class="fs-q-thumb-wrap" @click="emit('play-immediately', index)" title="คลิกเพื่อเล่นเพลงนี้ทันที">
+                <img :src="item.thumbnail" :alt="item.title" class="fs-q-thumb" />
+                <span class="fs-q-next-tag" v-if="index === 0">NEXT</span>
+              </div>
               <div class="fs-q-info">
                 <div class="fs-q-song" :title="item.title">{{ item.title }}</div>
                 <div class="fs-q-meta">
-                  <span>{{ item.artist }}</span>
-                  <span>•</span>
+                  <span class="fs-q-artist">{{ item.artist }}</span>
                   <span class="fs-q-user">
                     <User :size="10" />
                     {{ item.requestedBy || 'Host' }}
@@ -780,6 +1031,49 @@ onBeforeUnmount(() => {
       </div>
 
       <div class="deck-right-console">
+        <!-- Quick Stage FX Trigger Pad on Host Console -->
+        <div class="deck-fx-triggers">
+          <button
+            type="button"
+            class="deck-fx-btn gold"
+            @click="
+              emit('trigger-effect', {
+                effectType: 'applause',
+                label: 'GOLDEN OVATION // เสียงปรบมือรัว!'
+              })
+            "
+            title="ยิงเอฟเฟกต์เสียงปรบมือ & พลุทองคำ"
+          >
+            <Award :size="15" />
+          </button>
+          <button
+            type="button"
+            class="deck-fx-btn cyan"
+            @click="
+              emit('trigger-effect', {
+                effectType: 'spotlight',
+                label: 'ARENA SPOTLIGHT // นักร้องเสียงทอง!'
+              })
+            "
+            title="ยิงเอฟเฟกต์ไฟสปอตไลต์คอนเสิร์ต & เลเซอร์"
+          >
+            <Sparkles :size="15" />
+          </button>
+          <button
+            type="button"
+            class="deck-fx-btn fire"
+            @click="
+              emit('trigger-effect', {
+                effectType: 'hype',
+                label: 'STAGE INFERNO // เวทีลุกเป็นไฟ!'
+              })
+            "
+            title="ยิงเอฟเฟกต์ไฟพ่นหน้าเวที"
+          >
+            <Flame :size="15" />
+          </button>
+        </div>
+
         <div class="pitch-control-box" title="ปรับคีย์เพลง (Key Transpose)">
           <Sliders :size="14" class="console-icon" />
           <span class="pitch-label">KEY</span>

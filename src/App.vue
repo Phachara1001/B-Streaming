@@ -115,7 +115,7 @@ function triggerStageEffect(effectType, label, sender = 'Mobile Remote') {
   }
   effectTimer = setTimeout(() => {
     activeEffect.value = null
-  }, 3600)
+  }, 5000)
 }
 
 function regenerateRoomId() {
@@ -512,6 +512,7 @@ watch(viewMode, (newMode) => {
       @move-to-top="moveToTop($event, 'Host')"
       @remove-from-queue="removeFromQueue($event, 'Host')"
       @reorder-queue="reorderQueue($event, 'Host')"
+      @trigger-effect="triggerStageEffect($event.effectType, $event.label, 'Host')"
     />
 
     <!-- 1 PART (20% Width): QUEUE RUNNER, ADD SONG, DRAG-AND-DROP & PERMANENT QR CODE -->

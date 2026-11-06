@@ -101,7 +101,7 @@ input {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #818cf8;
+  color: #3d5bff;
 }
 
 .brand-titles {
@@ -129,7 +129,7 @@ input {
   padding: 2px 6px;
   border-radius: 4px;
   background: rgba(99, 102, 241, 0.16);
-  color: #a5b4fc;
+  color: #3d5bff;
   border: 1px solid rgba(99, 102, 241, 0.3);
 }
 
@@ -323,7 +323,7 @@ input {
   border-radius: 8px;
   border: 1px solid rgba(6, 182, 212, 0.35);
   background: rgba(6, 182, 212, 0.1);
-  color: #67e8f9;
+  color: #3d5bff;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -353,7 +353,7 @@ input {
   border-radius: 8px;
   border: 1px solid rgba(99, 102, 241, 0.35);
   background: rgba(99, 102, 241, 0.14);
-  color: #c7d2fe;
+  color: #3d5bff;
   font-size: 12px;
   font-weight: 600;
 }
@@ -372,13 +372,14 @@ input {
   position: relative;
   background: #040508;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   overflow: hidden;
 }
 
 .yt-stage-wrapper {
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: 100%;
   position: relative;
 }
@@ -394,7 +395,8 @@ input {
 /* Studio Lyric Teleprompter Stage */
 .lyric-studio-stage {
   position: relative;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: 100%;
   display: flex;
   align-items: center;
@@ -443,7 +445,7 @@ input {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
-  color: #a5b4fc;
+  color: #3d5bff;
 }
 
 .embed-fallback-tag {
@@ -553,7 +555,8 @@ input {
 /* Idle Stage State */
 .stage-idle-state {
   position: relative;
-  width: 100%;
+  flex: 1;
+  min-width: 0;
   height: 100%;
   display: flex;
   align-items: center;
@@ -589,7 +592,7 @@ input {
   border-radius: 50%;
   background: rgba(99, 102, 241, 0.14);
   border: 1px solid rgba(99, 102, 241, 0.35);
-  color: #818cf8;
+  color: #3d5bff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -668,7 +671,7 @@ input {
   height: 34px;
   border-radius: 8px;
   background: rgba(99, 102, 241, 0.2);
-  color: #a5b4fc;
+  color: #3d5bff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -695,31 +698,96 @@ input {
   color: var(--text-primary);
 }
 
+/* =========================================================
+   EXTRAVAGANT FULL-STAGE CONCERT FX ARENA (PURE CSS + SVG)
+   1. Applause (Golden Ovation, Shockwaves, 3D Confetti, Trophies)
+   2. Spotlight (6 Volumetric Sweeping Beams, 8 Lasers, Starbursts)
+   3. Hype / Fire (10 Pyro Flame Pillars, Fire Wall, 40 Embers)
+   ========================================================= */
+.stage-fx-arena {
+  position: absolute;
+  inset: 0;
+  z-index: 35;
+  pointer-events: none;
+  overflow: hidden;
+  perspective: 900px;
+}
+
+/* --- CENTER-TOP DRAMATIC NEON BANNER --- */
 .stage-effect-banner {
   position: absolute;
-  top: 24px;
+  top: 28px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 26;
+  z-index: 40;
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 14px 24px;
+  gap: 16px;
+  padding: 14px 28px 14px 18px;
   border-radius: 999px;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.92), rgba(6, 182, 212, 0.92));
-  border: 1px solid rgba(255, 255, 255, 0.35);
-  box-shadow: 0 16px 40px rgba(99, 102, 241, 0.45);
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(6, 182, 212, 0.95));
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 0 30px rgba(99, 102, 241, 0.8),
+    0 0 80px rgba(6, 182, 212, 0.5),
+    inset 0 0 20px rgba(255, 255, 255, 0.35);
+  animation: bannerPulsePop 0.6s cubic-bezier(0.22, 1, 0.36, 1) infinite alternate;
+}
+
+.stage-effect-banner.banner-applause {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.96), rgba(217, 119, 6, 0.96), rgba(251, 191, 36, 0.96));
+  box-shadow:
+    0 0 35px rgba(251, 191, 36, 0.9),
+    0 0 90px rgba(245, 158, 11, 0.65),
+    inset 0 0 22px rgba(255, 255, 255, 0.45);
+}
+
+.stage-effect-banner.banner-spotlight {
+  background: linear-gradient(135deg, rgba(6, 182, 212, 0.95), rgba(99, 102, 241, 0.95), rgba(236, 72, 153, 0.95));
+  box-shadow:
+    0 0 35px rgba(6, 182, 212, 0.9),
+    0 0 90px rgba(236, 72, 153, 0.65),
+    inset 0 0 22px rgba(255, 255, 255, 0.45);
+}
+
+.stage-effect-banner.banner-hype {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.96), rgba(249, 115, 22, 0.96), rgba(234, 179, 8, 0.96));
+  box-shadow:
+    0 0 40px rgba(249, 115, 22, 0.95),
+    0 0 100px rgba(239, 68, 68, 0.8),
+    inset 0 0 24px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes bannerPulsePop {
+  0% {
+    transform: translateX(-50%) scale(1);
+  }
+  100% {
+    transform: translateX(-50%) scale(1.05);
+  }
 }
 
 .effect-icon-circle {
-  width: 44px;
-  height: 44px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  animation: iconSpinWobble 0.8s ease-in-out infinite alternate;
+}
+
+@keyframes iconSpinWobble {
+  0% {
+    transform: rotate(-10deg) scale(0.95);
+  }
+  100% {
+    transform: rotate(10deg) scale(1.1);
+  }
 }
 
 .effect-copy {
@@ -728,14 +796,637 @@ input {
 }
 
 .effect-title {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
   color: #fff;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
 }
 
 .effect-sub {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* =========================================================
+   FX 1: APPLAUSE — GOLDEN OVATION, SHOCKWAVES & 3D CONFETTI
+   ========================================================= */
+.fx-applause-aura {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 60%, rgba(251, 191, 36, 0.28) 0%, transparent 65%),
+    radial-gradient(circle at 20% 90%, rgba(6, 182, 212, 0.25) 0%, transparent 50%),
+    radial-gradient(circle at 80% 90%, rgba(244, 114, 182, 0.25) 0%, transparent 50%);
+  box-shadow: inset 0 0 90px rgba(251, 191, 36, 0.45);
+  animation: applauseFlash 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes applauseFlash {
+  0% {
+    opacity: 0.65;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.fx-shockwave-ring {
+  position: absolute;
+  top: 55%;
+  left: 50%;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 3px solid rgba(251, 191, 36, 0.85);
+  box-shadow:
+    0 0 30px rgba(251, 191, 36, 0.8),
+    inset 0 0 30px rgba(6, 182, 212, 0.6);
+  transform: translate(-50%, -50%) scale(0.2);
+  opacity: 0;
+  animation: shockwaveBurst 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
+
+.fx-shockwave-ring.ring-2 {
+  animation-delay: 0.6s;
+  border-color: rgba(34, 211, 238, 0.85);
+}
+
+.fx-shockwave-ring.ring-3 {
+  animation-delay: 1.2s;
+  border-color: rgba(244, 114, 182, 0.85);
+}
+
+@keyframes shockwaveBurst {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(18);
+    opacity: 0;
+  }
+}
+
+.fx-confetti-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.fx-confetti-piece {
+  position: absolute;
+  bottom: -24px;
+  width: 11px;
+  height: 22px;
+  border-radius: 3px;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.85);
+  animation: confettiShoot 2.6s cubic-bezier(0.2, 0.8, 0.3, 1) infinite;
+}
+
+.fx-confetti-piece:nth-child(3n) {
+  background: linear-gradient(135deg, #22d3ee, #6366f1);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.85);
+  width: 9px;
+  height: 18px;
+}
+
+.fx-confetti-piece:nth-child(4n) {
+  background: linear-gradient(135deg, #f472b6, #ec4899);
+  box-shadow: 0 0 12px rgba(244, 114, 182, 0.85);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.fx-confetti-piece:nth-child(5n) {
+  background: linear-gradient(135deg, #34d399, #10b981);
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.85);
+}
+
+@keyframes confettiShoot {
+  0% {
+    transform: translateY(0) translateX(0) rotate3d(1, 1, 0, 0deg) scale(0.7);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  65% {
+    transform: translateY(-78vh) translateX(var(--drift, 40px))
+      rotate3d(1, 1, 1, 540deg) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-35vh) translateX(calc(var(--drift, 40px) * 1.4))
+      rotate3d(1, 1, 1, 960deg) scale(0.8);
+    opacity: 0;
+  }
+}
+
+/* --- CARTOON CLAPPING HANDS ANIMATION --- */
+.fx-cartoon-clappers-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fx-cartoon-clapper {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.6));
+  animation: clapperStageBounce 1.6s ease-in-out infinite alternate;
+  animation-delay: var(--clap-delay, 0s);
+}
+
+.cartoon-clap-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* Left Hand swings open (-30deg) and smacks right into the center (10deg) */
+.cartoon-hand-left {
+  transform-origin: 75px 148px;
+  animation: cartoonClapLeft var(--clap-speed, 0.25s) cubic-bezier(0.35, 0, 0.25, 1) infinite alternate;
+  animation-delay: var(--clap-delay, 0s);
+}
+
+/* Right Hand swings open (+30deg) and smacks left into the center (-10deg) */
+.cartoon-hand-right {
+  transform-origin: 145px 148px;
+  animation: cartoonClapRight var(--clap-speed, 0.25s) cubic-bezier(0.35, 0, 0.25, 1) infinite alternate;
+  animation-delay: var(--clap-delay, 0s);
+}
+
+/* Comic Starburst flashes right when the two palms collide! */
+.clap-impact-burst {
+  transform-origin: 110px 68px;
+  animation: cartoonClapImpact var(--clap-speed, 0.25s) cubic-bezier(0.35, 0, 0.25, 1) infinite alternate;
+  animation-delay: var(--clap-delay, 0s);
+}
+
+.comic-clap-tag {
+  margin-top: -10px;
+  padding: 2px 10px;
+  border-radius: 99px;
+  background: #fde047;
+  color: #1e1b4b;
+  border: 2.5px solid #1e1b4b;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  box-shadow: 0 4px 0 #1e1b4b;
+  animation: cartoonClapTagPop var(--clap-speed, 0.25s) ease-in-out infinite alternate;
+  animation-delay: var(--clap-delay, 0s);
+}
+
+@keyframes cartoonClapLeft {
+  0% {
+    transform: translate(-28px, 8px) rotate(-30deg) scale(0.94);
+  }
+  75% {
+    transform: translate(12px, -3px) rotate(12deg) scaleX(0.92) scaleY(1.06);
+  }
+  100% {
+    transform: translate(15px, -4px) rotate(14deg) scaleX(0.9) scaleY(1.08);
+  }
+}
+
+@keyframes cartoonClapRight {
+  0% {
+    transform: translate(28px, 8px) rotate(30deg) scale(0.94);
+  }
+  75% {
+    transform: translate(-12px, -3px) rotate(-12deg) scaleX(0.92) scaleY(1.06);
+  }
+  100% {
+    transform: translate(-15px, -4px) rotate(-14deg) scaleX(0.9) scaleY(1.08);
+  }
+}
+
+@keyframes cartoonClapImpact {
+  0%,
+  55% {
+    transform: scale(0.1) rotate(-20deg);
+    opacity: 0;
+  }
+  80% {
+    transform: scale(1.18) rotate(8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.32) rotate(15deg);
+    opacity: 1;
+  }
+}
+
+@keyframes cartoonClapTagPop {
+  0%,
+  50% {
+    transform: scale(0.75) translateY(4px);
+    opacity: 0.35;
+  }
+  100% {
+    transform: scale(1.15) translateY(-4px) rotate(-4deg);
+    opacity: 1;
+  }
+}
+
+@keyframes clapperStageBounce {
+  0% {
+    transform: rotate(var(--tilt, 0deg)) translateY(8px) scale(0.94);
+  }
+  50% {
+    transform: rotate(var(--tilt, 0deg)) translateY(-22px) scale(1.05);
+  }
+  100% {
+    transform: rotate(var(--tilt, 0deg)) translateY(-4px) scale(1);
+  }
+}
+
+/* =========================================================
+   FX 2: SPOTLIGHT — 6 VOLUMETRIC BEAMS, LASERS & FLOOR HALO
+   ========================================================= */
+.fx-spotlight-rig {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: screen;
+}
+
+.fx-spotlight-beam {
+  position: absolute;
+  top: -12%;
+  width: 360px;
+  height: 135%;
+  transform-origin: 50% 0%;
+  clip-path: polygon(47% 0%, 53% 0%, 100% 100%, 0% 100%);
+  filter: blur(8px);
+  opacity: 0.85;
+}
+
+.fx-spotlight-beam.beam-1 {
+  left: 4%;
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.9) 0%, rgba(6, 182, 212, 0.25) 65%, transparent 100%);
+  animation: beamSweepLeft 1.9s ease-in-out infinite alternate;
+}
+
+.fx-spotlight-beam.beam-2 {
+  left: 22%;
+  background: linear-gradient(180deg, rgba(129, 140, 248, 0.9) 0%, rgba(99, 102, 241, 0.28) 65%, transparent 100%);
+  animation: beamSweepRight 2.2s ease-in-out infinite alternate;
+}
+
+.fx-spotlight-beam.beam-3 {
+  left: 38%;
+  background: linear-gradient(180deg, rgba(244, 114, 182, 0.92) 0%, rgba(236, 72, 153, 0.25) 65%, transparent 100%);
+  animation: beamSweepLeft 1.6s ease-in-out infinite alternate-reverse;
+}
+
+.fx-spotlight-beam.beam-4 {
+  right: 38%;
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.88) 0%, rgba(245, 158, 11, 0.22) 65%, transparent 100%);
+  animation: beamSweepRight 1.8s ease-in-out infinite alternate-reverse;
+}
+
+.fx-spotlight-beam.beam-5 {
+  right: 22%;
+  background: linear-gradient(180deg, rgba(52, 211, 153, 0.88) 0%, rgba(16, 185, 129, 0.25) 65%, transparent 100%);
+  animation: beamSweepLeft 2.1s ease-in-out infinite alternate;
+}
+
+.fx-spotlight-beam.beam-6 {
+  right: 4%;
+  background: linear-gradient(180deg, rgba(167, 139, 250, 0.92) 0%, rgba(139, 92, 246, 0.28) 65%, transparent 100%);
+  animation: beamSweepRight 1.7s ease-in-out infinite alternate;
+}
+
+@keyframes beamSweepLeft {
+  0% {
+    transform: rotate(-34deg) scaleX(0.9);
+  }
+  100% {
+    transform: rotate(28deg) scaleX(1.15);
+  }
+}
+
+@keyframes beamSweepRight {
+  0% {
+    transform: rotate(34deg) scaleX(0.9);
+  }
+  100% {
+    transform: rotate(-28deg) scaleX(1.15);
+  }
+}
+
+.fx-laser-grid {
+  position: absolute;
+  inset: 0;
+}
+
+.fx-laser-beam {
+  position: absolute;
+  bottom: -5%;
+  width: 3px;
+  height: 125%;
+  background: linear-gradient(0deg, #ffffff 0%, #22d3ee 40%, #ec4899 80%, transparent 100%);
+  box-shadow:
+    0 0 14px #22d3ee,
+    0 0 28px #6366f1;
+  transform-origin: 50% 100%;
+  animation: laserFan 1.1s ease-in-out infinite alternate;
+}
+
+@keyframes laserFan {
+  0% {
+    transform: rotate(-38deg);
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(38deg);
+    opacity: 0.55;
+  }
+}
+
+.fx-stage-floor-halo {
+  position: absolute;
+  bottom: -40px;
+  left: 10%;
+  right: 10%;
+  height: 150px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(34, 211, 238, 0.55) 0%,
+    rgba(168, 85, 247, 0.35) 45%,
+    transparent 75%
+  );
+  filter: blur(18px);
+  animation: floorHaloPulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes floorHaloPulse {
+  0% {
+    transform: scaleX(0.85) scaleY(0.9);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scaleX(1.12) scaleY(1.2);
+    opacity: 1;
+  }
+}
+
+.fx-starburst-field {
+  position: absolute;
+  inset: 0;
+}
+
+.fx-starburst-node {
+  position: absolute;
+  color: #ffffff;
+  filter: drop-shadow(0 0 14px #22d3ee) drop-shadow(0 0 26px #f472b6);
+  animation: starburstPop 0.9s ease-in-out infinite alternate;
+}
+
+@keyframes starburstPop {
+  0% {
+    transform: scale(0.3) rotate(0deg);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(1.45) rotate(90deg);
+    opacity: 1;
+  }
+}
+
+/* =========================================================
+   FX 3: HYPE / FIRE — PYRO FLAME PILLARS, FIRE WALL & EMBERS
+   ========================================================= */
+.fx-inferno-vignette {
+  position: absolute;
+  inset: 0;
+  box-shadow:
+    inset 0 -120px 140px rgba(239, 68, 68, 0.75),
+    inset 0 0 90px rgba(249, 115, 22, 0.55);
+  background: radial-gradient(circle at 50% 100%, rgba(251, 146, 60, 0.38) 0%, transparent 65%);
+  animation: infernoHeatPulse 0.45s ease-in-out infinite alternate;
+}
+
+@keyframes infernoHeatPulse {
+  0% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.fx-fire-wall-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -20px;
+  height: 62%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  padding: 0 2%;
+}
+
+.fx-fire-glow-base {
+  position: absolute;
+  left: -5%;
+  right: -5%;
+  bottom: -30px;
+  height: 170px;
+  background: linear-gradient(
+    0deg,
+    rgba(255, 255, 180, 0.95) 0%,
+    rgba(255, 140, 0, 0.85) 35%,
+    rgba(220, 38, 38, 0.55) 70%,
+    transparent 100%
+  );
+  filter: blur(18px);
+  animation: fireBaseWave 0.35s ease-in-out infinite alternate;
+}
+
+@keyframes fireBaseWave {
+  0% {
+    transform: scaleY(0.9);
+  }
+  100% {
+    transform: scaleY(1.18);
+  }
+}
+
+.fx-pyro-pillar {
+  position: relative;
+  width: 11%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transform-origin: 50% 100%;
+  animation: pyroPillarRoar 0.42s ease-in-out infinite alternate;
+}
+
+.pyro-outer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 50% 50% 25% 25% / 75% 75% 20% 20%;
+  background: linear-gradient(
+    0deg,
+    #fff7ed 0%,
+    #facc15 22%,
+    #f97316 52%,
+    #dc2626 80%,
+    transparent 100%
+  );
+  filter: blur(10px);
+  box-shadow:
+    0 0 40px rgba(249, 115, 22, 0.9),
+    0 0 80px rgba(220, 38, 38, 0.75);
+}
+
+.pyro-core {
+  position: relative;
+  z-index: 2;
+  width: 56%;
+  height: 76%;
+  border-radius: 50% 50% 30% 30% / 80% 80% 20% 20%;
+  background: linear-gradient(0deg, #ffffff 0%, #fef08a 45%, #fb923c 85%, transparent 100%);
+  filter: blur(4px);
+}
+
+@keyframes pyroPillarRoar {
+  0% {
+    transform: scaleY(0.72) scaleX(0.92) skewX(-4deg);
+  }
+  50% {
+    transform: scaleY(1.08) scaleX(1.05) skewX(3deg);
+  }
+  100% {
+    transform: scaleY(1.24) scaleX(0.88) skewX(-3deg);
+  }
+}
+
+.fx-ember-storm {
+  position: absolute;
+  inset: 0;
+}
+
+.fx-ember-spark {
+  position: absolute;
+  bottom: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffffff 0%, #facc15 45%, #ea580c 100%);
+  box-shadow:
+    0 0 12px #f97316,
+    0 0 24px #ef4444;
+  animation: emberStormFly 1.9s ease-out infinite;
+}
+
+@keyframes emberStormFly {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-92vh) translateX(var(--ember-drift, 40px)) scale(0.2);
+    opacity: 0;
+  }
+}
+
+.fx-floating-flames {
+  position: absolute;
+  inset: 0;
+}
+
+.fx-flame-surge {
+  position: absolute;
+  bottom: 8%;
+  left: calc((var(--f) * 11.5%) - 1%);
+  color: #fef08a;
+  filter: drop-shadow(0 0 16px #f97316) drop-shadow(0 0 32px #dc2626);
+  animation: flameIconSurge 1.5s ease-out infinite;
+  animation-delay: calc(var(--f) * 0.16s);
+}
+
+@keyframes flameIconSurge {
+  0% {
+    transform: translateY(0) scale(0.7);
+    opacity: 0;
+  }
+  25% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-65vh) scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Quick FX Trigger Buttons on Host Bottom Console */
+.deck-fx-triggers {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px;
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+}
+
+.deck-fx-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: var(--bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.deck-fx-btn.gold {
+  color: #fbbf24;
+}
+.deck-fx-btn.gold:hover {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.5);
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.45);
+}
+
+.deck-fx-btn.cyan {
+  color: #22d3ee;
+}
+.deck-fx-btn.cyan:hover {
+  background: rgba(34, 211, 238, 0.2);
+  border-color: rgba(34, 211, 238, 0.5);
+  box-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
+}
+
+.deck-fx-btn.fire {
+  color: #fb923c;
+}
+.deck-fx-btn.fire:hover {
+  background: rgba(249, 115, 22, 0.22);
+  border-color: rgba(249, 115, 22, 0.55);
+  box-shadow: 0 0 12px rgba(249, 115, 22, 0.5);
 }
 
 /* Up Next Floating Corner Preview */
@@ -834,23 +1525,20 @@ input {
 
 /* =========================================================
    FULLSCREEN RIGHT PANEL: LARGE QR CODE + LIVE QUEUE LIST
+   (Side-by-side column so it NEVER covers the video!)
    ========================================================= */
 .fs-right-queue-dock {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  bottom: 16px;
+  position: relative;
   width: 340px;
+  height: 100%;
+  flex-shrink: 0;
   z-index: 20;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: rgba(12, 14, 21, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 16px;
-  backdrop-filter: blur(18px);
+  background: var(--bg-surface);
+  border-left: 1px solid var(--border-subtle);
   padding: 14px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
   overflow: hidden;
 }
 
@@ -1064,7 +1752,7 @@ input {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  color: #a5b4fc;
+  color: #3d5bff;
 }
 
 .fs-q-actions {
@@ -1181,7 +1869,7 @@ input {
 }
 
 .requester-tag {
-  color: #a5b4fc;
+  color: #3d5bff;
   font-weight: 500;
 }
 
@@ -1513,7 +2201,7 @@ input {
   padding: 1px 6px;
   border-radius: 99px;
   background: rgba(99, 102, 241, 0.22);
-  color: #a5b4fc;
+  color: #3d5bff;
 }
 
 /* Sidebar Tab Body */
@@ -1549,7 +2237,7 @@ input {
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 700;
-  color: #a5b4fc;
+  color: #3d5bff;
 }
 
 .mini-eq {
@@ -1846,7 +2534,7 @@ input {
 }
 
 .q-user {
-  color: #a5b4fc;
+  color: #3d5bff;
 }
 
 .queue-item-actions {
@@ -1935,7 +2623,7 @@ input {
   border-radius: 7px;
   border: 1px solid rgba(99, 102, 241, 0.4);
   background: rgba(99, 102, 241, 0.15);
-  color: #c7d2fe;
+  color: #3d5bff;
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -2004,7 +2692,7 @@ input {
   border-radius: 5px;
   background: rgba(99, 102, 241, 0.18);
   border: 1px solid rgba(99, 102, 241, 0.35);
-  color: #c7d2fe;
+  color: #3d5bff;
 }
 
 .qr-dock-desc {
@@ -2054,7 +2742,7 @@ input {
 .qr-mini-btn.primary {
   background: rgba(99, 102, 241, 0.18);
   border-color: rgba(99, 102, 241, 0.45);
-  color: #c7d2fe;
+  color: #3d5bff;
 }
 
 .qr-mini-btn.primary:hover {
@@ -2161,7 +2849,7 @@ input {
   gap: 6px;
   font-size: 11px;
   font-weight: 600;
-  color: #c7d2fe;
+  color: #3d5bff;
 }
 
 .custom-title-input {
@@ -2201,7 +2889,7 @@ input {
 
 .btn-add-song.secondary {
   background: rgba(6, 182, 212, 0.2);
-  color: #67e8f9;
+  color: #3d5bff;
   border: 1px solid rgba(6, 182, 212, 0.4);
 }
 
@@ -2337,7 +3025,7 @@ input {
 .cat-btn.next:hover {
   background: rgba(6, 182, 212, 0.2);
   border-color: var(--accent-cyan);
-  color: #67e8f9;
+  color: #3d5bff;
 }
 
 /* =========================================================
@@ -2452,7 +3140,7 @@ input {
   border-radius: 99px;
   border: 1px solid rgba(99, 102, 241, 0.4);
   background: rgba(99, 102, 241, 0.14);
-  color: #c7d2fe;
+  color: #3d5bff;
   font-size: 11px;
   font-weight: 600;
   display: inline-flex;
@@ -2495,7 +3183,7 @@ input {
   border-radius: 50%;
   background: rgba(99, 102, 241, 0.16);
   border: 1px solid rgba(99, 102, 241, 0.4);
-  color: #a5b4fc;
+  color: #3d5bff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2509,7 +3197,7 @@ input {
   border-radius: 99px;
   background: rgba(6, 182, 212, 0.14);
   border: 1px solid rgba(6, 182, 212, 0.35);
-  color: #67e8f9;
+  color: #3d5bff;
 }
 
 .gate-title {
@@ -2634,13 +3322,13 @@ input {
   font-size: 11.5px;
   background: rgba(99, 102, 241, 0.12);
   border: 1px solid rgba(99, 102, 241, 0.3);
-  color: #c7d2fe;
+  color: #3d5bff;
 }
 
 .r-room-mode-banner.music {
   background: rgba(6, 182, 212, 0.12);
   border-color: rgba(6, 182, 212, 0.35);
-  color: #67e8f9;
+  color: #3d5bff;
 }
 
 .remote-close-btn,
@@ -2809,7 +3497,7 @@ input {
 
 .r-btn-accent {
   background: rgba(6, 182, 212, 0.2);
-  color: #67e8f9;
+  color: #3d5bff;
   border: 1px solid rgba(6, 182, 212, 0.4);
 }
 
@@ -3122,7 +3810,7 @@ input {
   border-radius: 10px;
   border: 1px solid rgba(99, 102, 241, 0.35);
   background: rgba(99, 102, 241, 0.12);
-  color: #c7d2fe;
+  color: #3d5bff;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3227,7 +3915,7 @@ input {
   border-radius: 10px;
   background: rgba(99, 102, 241, 0.16);
   border: 1px solid rgba(99, 102, 241, 0.4);
-  color: #a5b4fc;
+  color: #3d5bff;
   display: flex;
   align-items: center;
   justify-content: center;
