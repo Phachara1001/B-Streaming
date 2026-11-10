@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import {
   Search,
   ListMusic,
@@ -39,7 +39,7 @@ import { parseYouTubeVideoId } from '../data/karaokeCatalog.js'
 const props = defineProps({
   roomId: {
     type: String,
-    default: 'KTV-889'
+    default: 'BS8899'
   },
   roomMusicMode: {
     type: String,
@@ -78,9 +78,25 @@ const props = defineProps({
 const emit = defineEmits(['send-command', 'close-drawer', 'switch-to-host'])
 
 // Mandatory Guest Name Onboarding State
-const guestName = ref('')
-const hasEnteredName = ref(false)
+const GUEST_NAME_KEY = 'bs.guestName.v1'
+function readSavedGuestName() {
+  try {
+    return (localStorage.getItem(GUEST_NAME_KEY) || '').trim()
+  } catch (_) {
+    return ''
+  }
+}
+const savedGuestName = props.isEmbeddedDrawer ? '' : readSavedGuestName()
+const guestName = ref(savedGuestName)
+const hasEnteredName = ref(Boolean(savedGuestName))
 const nameInputError = ref(false)
+
+onMounted(() => {
+  // Returning guest (page reloaded / phone unlocked): rejoin automatically, no re-entering needed
+  if (savedGuestName) {
+    setTimeout(() => dispatchCmd('JOIN_ROOM', { name: savedGuestName }), 600)
+  }
+})
 
 const activeTab = ref('search') // 'search' | 'queue' | 'pad'
 const searchQuery = ref('')
@@ -139,6 +155,11 @@ function handleConfirmGuestName() {
   nameInputError.value = false
   guestName.value = trimmed
   hasEnteredName.value = true
+  if (!props.isEmbeddedDrawer) {
+    try {
+      localStorage.setItem(GUEST_NAME_KEY, trimmed)
+    } catch (_) {}
+  }
   dispatchCmd('JOIN_ROOM', { name: trimmed })
 }
 

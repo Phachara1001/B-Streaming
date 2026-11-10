@@ -7,6 +7,7 @@ import {
   Pause,
   SkipForward,
   RotateCcw,
+  History,
   Volume2,
   VolumeX,
   Maximize2,
@@ -62,9 +63,13 @@ const props = defineProps({
     type: Number,
     default: 0
   },
+  roomName: {
+    type: String,
+    default: ''
+  },
   roomId: {
     type: String,
-    default: 'KTV-889'
+    default: 'BS8899'
   },
   roomMusicMode: {
     type: String,
@@ -105,6 +110,7 @@ const emit = defineEmits([
   'update-pitch',
   'update-room-music-mode',
   'reset-room-id',
+  'open-history',
   'toggle-remote-drawer',
   'switch-to-remote-page',
   'song-ended',
@@ -437,7 +443,7 @@ onBeforeUnmount(() => {
             <span class="brand-title"><span class="brand-b">B</span><span class="brand-dash">-</span>Streaming</span>
             <span class="brand-pro-badge">LIVE</span>
           </div>
-          <span class="brand-subtitle">Stream. Sing. Share.</span>
+          <span class="brand-subtitle">{{ roomName || 'Stream. Sing. Share.' }}</span>
         </div>
       </div>
 
@@ -494,6 +500,12 @@ onBeforeUnmount(() => {
 
         <ThemeSwitcher />
 
+        <button type="button" class="remote-sim-btn history-btn" @click="emit('open-history')"
+          title="ดูประวัติเพลงของห้องนี้">
+          <History :size="15" />
+          <span>ประวัติ</span>
+        </button>
+
         <button type="button" class="remote-sim-btn" @click="emit('toggle-remote-drawer')"
           title="เปิดรีโมตมือถือจำลองบนหน้าจอ">
           <Smartphone :size="15" />
@@ -502,7 +514,7 @@ onBeforeUnmount(() => {
         </button>
 
         <button type="button" class="room-static-badge clickable" @click="emit('reset-room-id')"
-          title="รหัสห้องจะสุ่มใหม่ทุกครั้งที่รีเฟรช หรือคลิกที่นี่เพื่อสุ่มรหัสห้องใหม่ทันที">
+          title="ออกจากห้อง กลับไปหน้ารายการห้อง">
           <QrCode :size="14" />
           <span class="mono-code">{{ roomId }}</span>
           <RotateCcw :size="12" />

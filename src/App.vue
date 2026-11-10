@@ -1,35 +1,29 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
+import { ref, computed, nextTick, onMounted, onBeforeUnmount, watch } from 'vue'
 import QRCode from 'qrcode'
 import StagePlayer from './components/StagePlayer.vue'
 import QueueSidebar from './components/QueueSidebar.vue'
 import MobileRemoteView from './components/MobileRemoteView.vue'
+import HistoryModal from './components/HistoryModal.vue'
 import { createRoomSync } from './services/syncService.js'
+import { loadRoomState, logHistory, getRoom } from './services/roomService.js'
 
-// Generate a brand-new random Room ID every time Host opens or refreshes the page
-function createRandomRoomId() {
-  const chars = '23456789ABCDEFGHJKLMNPQRSTUVWXYZ'
-  let code = ''
-  for (let i = 0; i < 4; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length))
-  }
-  return `KTV-${code}`
-}
+const props = defineProps({
+  roomCode: { type: String, required: true },
+  roomName: { type: String, default: '' },
+  mode: { type: String, default: 'host' } // 'host' | 'remote'
+})
+const emit = defineEmits(['leave'])
 
-// Determine initial mode & room from URL query params
-const params = new URLSearchParams(window.location.search)
-const initialMode = params.get('mode') === 'remote' ? 'remote' : 'host'
-const initialRoom =
-  initialMode === 'remote' && params.get('room')
-    ? params.get('room').toUpperCase()
-    : createRandomRoomId()
-
-const viewMode = ref(initialMode) // 'host' | 'remote'
-const roomId = ref(initialRoom)
+const viewMode = ref(props.mode === 'remote' ? 'remote' : 'host') // 'host' | 'remote'
+const roomId = ref(props.roomCode)
+const showHistory = ref(false)
+const historyVersion = ref(0)
 const remoteCount = ref(0)
 
 // Host Room Mode: 'karaoke' (คาราโอเกะ) | 'music' (เพลงปกติ / ฟังเพลง)
 const roomMusicMode = ref('karaoke')
+const syncStatus = ref('connecting')
 
 // Always-visible QR Code Data
 const qrDataUrl = ref('')
@@ -118,32 +112,8 @@ function triggerStageEffect(effectType, label, sender = 'Mobile Remote') {
   }, 5000)
 }
 
-function regenerateRoomId() {
-  roomId.value = createRandomRoomId()
-  remoteCount.value = 0
-  generateRoomQrCode()
-  if (roomSync) roomSync.stop()
-  roomSync = createRoomSync({
-    roomId: roomId.value,
-    role: viewMode.value,
-    getInitialState: getStateSnapshot,
-    onStateSync: (remoteState) => {
-      if (viewMode.value === 'remote') {
-        applyRemoteState(remoteState)
-      }
-    },
-    onCommand: (cmd) => {
-      if (viewMode.value === 'host') {
-        executeRemoteCommand(cmd)
-      }
-    },
-    onRemoteCount: (count) => {
-      remoteCount.value = count
-    }
-  })
-  roomSync.start()
-  broadcastHostState()
-  triggerOsd(`รีเซ็ตรหัสห้องใหม่เป็น: ${roomId.value}`, 'Host', 'info')
+function leaveRoom() {
+  emit('leave')
 }
 
 function setRoomMusicMode(mode, sender = 'Host') {
@@ -152,6 +122,17 @@ function setRoomMusicMode(mode, sender = 'Host') {
   const modeLabel = mode === 'karaoke' ? 'โหมดคาราโอเกะ (Karaoke)' : 'โหมดเพลงปกติ (Original MV)'
   triggerOsd(`สลับโหมดห้องเป็น: ${modeLabel}`, sender, 'info')
   broadcastHostState()
+}
+
+let restoringState = false
+
+function recordHistory(song, event) {
+  if (viewMode.value !== 'host' || !song) return
+  logHistory(roomId.value, song, event)
+    .catch(() => {})
+    .finally(() => {
+      historyVersion.value += 1
+    })
 }
 
 function makeQueueEntry(song, requester) {
@@ -165,6 +146,7 @@ function makeQueueEntry(song, requester) {
 // Queue & Transport Actions
 function addToQueue(song, sender = 'Host') {
   const entry = makeQueueEntry(song, sender)
+  recordHistory(entry, 'queued')
   if (!currentSong.value) {
     currentSong.value = entry
     isPlaying.value = true
@@ -177,6 +159,7 @@ function addToQueue(song, sender = 'Host') {
 
 function playNext(song, sender = 'Host') {
   const entry = makeQueueEntry(song, sender)
+  recordHistory(entry, 'queued')
   if (!currentSong.value) {
     currentSong.value = entry
     isPlaying.value = true
@@ -250,6 +233,7 @@ function clearQueue() {
 }
 
 function skipSong(sender = 'Host') {
+  if (currentSong.value && sender !== 'Auto-Queue') recordHistory(currentSong.value, 'skipped')
   if (queue.value.length > 0) {
     const next = queue.value.shift()
     currentSong.value = next
@@ -404,8 +388,32 @@ function applyRemoteState(remoteState) {
   }
 }
 
-onMounted(() => {
+watch(
+  () => currentSong.value && currentSong.value.queueId,
+  (id) => {
+    if (id && !restoringState) recordHistory(currentSong.value, 'played')
+  }
+)
+
+onMounted(async () => {
   generateRoomQrCode()
+
+  if (viewMode.value === 'host') {
+    try {
+      const room = await getRoom(roomId.value)
+      if (room && room.musicMode) roomMusicMode.value = room.musicMode
+      const saved = await loadRoomState(roomId.value)
+      if (saved) {
+        restoringState = true
+        applyRemoteState(saved)
+        isPlaying.value = false
+        await nextTick()
+        restoringState = false
+      }
+    } catch (_) {
+      restoringState = false
+    }
+  }
 
   roomSync = createRoomSync({
     roomId: roomId.value,
@@ -423,6 +431,9 @@ onMounted(() => {
     },
     onRemoteCount: (count) => {
       remoteCount.value = count
+    },
+    onStatus: (s) => {
+      syncStatus.value = s
     }
   })
 
@@ -452,6 +463,9 @@ watch(viewMode, (newMode) => {
     },
     onRemoteCount: (count) => {
       remoteCount.value = count
+    },
+    onStatus: (s) => {
+      syncStatus.value = s
     }
   })
   roomSync.start()
@@ -462,6 +476,7 @@ watch(viewMode, (newMode) => {
 <template>
   <!-- MODE A: FULL MOBILE REMOTE CONTROL VIEW -->
   <div v-if="viewMode === 'remote'" class="remote-fullscreen-wrapper">
+    <div v-if="syncStatus !== 'connected'" class="sync-banner">{{ syncStatus === 'host-offline' ? 'จอหลักของห้องนี้ยังไม่ออนไลน์ เพลงที่กดจะถูกส่งเมื่อจอหลักกลับมา' : 'กำลังเชื่อมต่อกับจอหลัก... คำสั่งที่กดจะถูกส่งอัตโนมัติเมื่อเชื่อมต่อได้' }}</div>
     <MobileRemoteView
       :room-id="roomId"
       :room-music-mode="roomMusicMode"
@@ -473,7 +488,7 @@ watch(viewMode, (newMode) => {
       :pitch-semitones="pitchSemitones"
       :is-embedded-drawer="false"
       @send-command="handleRemoteCommandDispatch"
-      @switch-to-host="viewMode = 'host'"
+      @switch-to-host="leaveRoom"
     />
   </div>
 
@@ -489,6 +504,7 @@ watch(viewMode, (newMode) => {
       :is-muted="isMuted"
       :pitch-semitones="pitchSemitones"
       :room-id="roomId"
+      :room-name="roomName"
       :room-music-mode="roomMusicMode"
       :remote-count="remoteCount + (showRemoteDrawer ? 1 : 0)"
       :qr-data-url="qrDataUrl"
@@ -503,8 +519,9 @@ watch(viewMode, (newMode) => {
       @toggle-mute="toggleMute('Host')"
       @update-pitch="updatePitch($event, 'Host')"
       @update-room-music-mode="setRoomMusicMode($event, 'Host')"
-      @reset-room-id="regenerateRoomId"
+      @reset-room-id="leaveRoom"
       @toggle-remote-drawer="showRemoteDrawer = !showRemoteDrawer"
+      @open-history="showHistory = true"
       @switch-to-remote-page="viewMode = 'remote'"
       @song-ended="handleSongEnded"
       @open-add-tab="sidebarTab = 'add'"
@@ -538,6 +555,15 @@ watch(viewMode, (newMode) => {
       @clear-queue="clearQueue"
       @skip-song="skipSong('Host')"
       @toggle-remote-drawer="showRemoteDrawer = !showRemoteDrawer"
+    />
+
+    <HistoryModal
+      :open="showHistory"
+      :room-code="roomId"
+      :room-name="roomName"
+      :version="historyVersion"
+      @close="showHistory = false"
+      @requeue="addToQueue($event, 'Host')"
     />
 
     <!-- FLOATING INTERACTIVE MOBILE REMOTE SIMULATOR DRAWER -->

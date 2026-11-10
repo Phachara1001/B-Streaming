@@ -19,7 +19,7 @@ const props = defineProps({
   },
   roomId: {
     type: String,
-    default: 'KTV-889'
+    default: 'BS8899'
   },
   remoteCount: {
     type: Number,

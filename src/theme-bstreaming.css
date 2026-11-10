@@ -1540,3 +1540,5 @@ body,
 .queue-items-container {
   gap: 12px;
 }
+
+.sync-banner{position:absolute;top:0;left:0;right:0;z-index:50;padding:6px 12px;text-align:center;font-size:12px;font-weight:700;background:var(--pop-yellow,#ffd23f);color:var(--ink,#1a0f2e);border-bottom:2px solid var(--ink,#1a0f2e)}
